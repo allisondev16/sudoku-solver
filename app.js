@@ -1,5 +1,6 @@
 const puzzleBoard = document.querySelector('#puzzle')
 const solveButton = document.querySelector('#solve-button')
+const solvable = document.querySelector('#solvable')
 const squares = 81
 const submission = []
 
@@ -12,38 +13,72 @@ for (let i = 0; i < squares; i++) {
 }
 
 const createArray = () => {
-    const input = document.querySelectorAll('input')
-    input.forEach(input => {
+    const inputs = document.querySelectorAll('input')
+    inputs.forEach(input => {
         if (input.value) {
             submission.push(input.value)
         } else {
             submission.push('.')
         }
     })
-    console.log(submission.join(''))
+}
+
+const populateSolution = (isSolvable, solution) => {
+    if (isSolvable && solution) {
+        const inputs = document.querySelectorAll('input')
+
+        // make solutionArray into one array
+        const finalSolutionArray = []
+        for (let index = 0; index < solution.length; index++) {
+            const currentArray = solution[index]
+            finalSolutionArray.push(...currentArray)
+        }
+
+        // populate the solution in to the board
+        inputs.forEach((input, i) => {
+            input.value = finalSolutionArray[i]
+        })
+
+        solvable.innerHTML = "Solved!"
+        solveButton.removeAttribute('disabled')
+        solveButton.innerHTML = 'Solve'
+    } else {
+        solvable.innerHTML = "Not solvable!"
+        solveButton.removeAttribute('disabled')
+        solveButton.innerHTML = 'Solve'
+    }
 }
 
 const solve = () => {
-    var options = {
-        method: 'POST',
-        url: 'https://solve-sudoku.p.rapidapi.com/',
-        headers: {
-            'content-type': 'application/json',
-            'x-rapidapi-host': 'solve-sudoku.p.rapidapi.com',
-            'x-rapidapi-key': '639b5a8537msh53a9d6eb2b85039p180844jsn3986e4cf168e'
+    solveButton.setAttribute('disabled', 'true')
+    solveButton.innerHTML = 'Loading...'
+
+    createArray()
+    const arrayToString = submission.join('')
+
+    const options = {
+        method: 'GET',
+        url: 'https://sudoku-board.p.rapidapi.com/solve-board',
+        params: {
+            sudo: arrayToString,
+            stype: 'list'
         },
-        data: {
-            puzzle: '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+        headers: {
+            'x-rapidapi-host': 'sudoku-board.p.rapidapi.com',
+            'x-rapidapi-key': '639b5a8537msh53a9d6eb2b85039p180844jsn3986e4cf168e'
         }
     };
 
-    axios.request(options).then(function (response) {
-        console.log(response.data);
-    }).catch(function (error) {
-        console.error(error);
-    });
+    const result = axios.request(options).then(response => {
+        populateSolution(response.data.response.solvable, response.data.response.solution)
+    }).catch(error => {
+        console.error(error)
+        // API is sometimes encountering error if not solvable, this is a workaround solution:
+        solvable.innerHTML = "Not solvable!"
+        solveButton.removeAttribute('disabled')
+        solveButton.innerHTML = 'Solve'
+    })
 }
-
 
 
 solveButton.addEventListener('click', solve)
