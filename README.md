@@ -11,3 +11,5 @@ input.forEach((input, i) => {
     input.value = finalSolutionArray[i]
 })
 ```
+
+- Hide your API key on GitHub so that it won't be stolen and your credit card will be charged per requests, use env. 
