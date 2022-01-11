@@ -64,28 +64,7 @@ const solve = () => {
     createArray()
     const arrayToString = submission.join('')
 
-    const options = {
-        method: 'GET',
-        url: 'https://sudoku-board.p.rapidapi.com/solve-board',
-        params: {
-            sudo: arrayToString,
-            stype: 'list'
-        },
-        headers: {
-            'x-rapidapi-host': 'sudoku-board.p.rapidapi.com',
-            'x-rapidapi-key': '639b5a8537msh53a9d6eb2b85039p180844jsn3986e4cf168e'
-        }
-    };
 
-    const result = axios.request(options).then(response => {
-        populateSolution(response.data.response.solvable, response.data.response.solution)
-    }).catch(error => {
-        console.error(error)
-        // API is sometimes encountering error if not solvable, this is a workaround solution:
-        solvable.innerHTML = "Not solvable!"
-        solveButton.removeAttribute('disabled')
-        solveButton.innerHTML = 'Solve'
-    })
 }
 
 
