@@ -58,13 +58,47 @@ const populateSolution = (isSolvable, solution) => {
 }
 
 const solve = () => {
-    solveButton.setAttribute('disabled', 'true')
-    solveButton.innerHTML = 'Loading...'
+    // solveButton.setAttribute('disabled', 'true')
+    // solveButton.innerHTML = 'Loading...'
 
     createArray()
-    const arrayToString = submission.join('')
+    const data = { numbers: submission.join('') }
+
+    fetch('http://localhost:8000/solve', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.json())
+        .then(data => console.log('result', data))
+        .catch(error => console.error('Error: ', error))
 
 
+    // const options = {
+    //     method: 'GET',
+    //     url: 'https://sudoku-board.p.rapidapi.com/solve-board',
+    //     params: {
+    //         sudo: '...3232..326..2326.2326......',
+    //         stype: 'list'
+    //     },
+    //     headers: {
+    //         'x-rapidapi-host': 'sudoku-board.p.rapidapi.com',
+    //         'x-rapidapi-key': process.env.RAPID_API_KEY
+    //     }
+    // };
+
+    // const result = axios.request(options).then(response => {
+    //     populateSolution(response.data.response.solvable, response.data.response.solution)
+    // }).catch(error => {
+    //     console.error(error)
+    //     // API is sometimes encountering error if not solvable, this is a workaround solution:
+    //     solvable.innerHTML = "Not solvable!"
+    //     solveButton.removeAttribute('disabled')
+    //     solveButton.innerHTML = 'Solve'
+    // })
 }
 
 
