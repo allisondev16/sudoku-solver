@@ -8,11 +8,12 @@ app.use(cors())
 app.use(express.json())
 
 app.post('/solve', (req, res) => {
+
     const options = {
         method: 'GET',
         url: 'https://sudoku-board.p.rapidapi.com/solve-board',
         params: {
-            sudo: req.body,
+            sudo: req.body.numbers,
             stype: 'list'
         },
         headers: {
@@ -22,10 +23,9 @@ app.post('/solve', (req, res) => {
     };
 
     axios.request(options).then(response => {
-        //populateSolution(response.data.response.solvable, response.data.response.solution)
-        res.json(response)
+        res.json(response.data);
     }).catch(error => {
-        console.error(error)
+        console.error('Error: ', error)
     })
 })
 
